@@ -6,6 +6,7 @@ import NavigationBar from './components/NavigationBar.jsx'
 import Header from './components/Header.jsx'
 import Footer from './components/Footer.jsx'
 import Content from './components/Content.jsx'
+import Read from './components/read.jsx'
 
 // Main App component
 export default function App() {
@@ -18,10 +19,10 @@ export default function App() {
       <Routes>
         {/* Default home route */}
         <Route path="/" element={<h1>Hello everyone Adrian is here</h1>} />
-        
+
         {/* Route for the "Read" page */}
-        <Route path="/read" element={<h1>Read</h1>} />
-        
+        <Route path="/read" element={<Read></Read>} />
+
         {/* Route for the "Create" page */}
         <Route path="/create" element={<h1>Create</h1>} />
       </Routes>
