@@ -1,4 +1,3 @@
-// Import the Movieitem component — responsible for displaying individual movie cards
 import Movieitem from './movieitem.jsx';
 
 // Define the Movies functional component, which receives a list of movies via props
