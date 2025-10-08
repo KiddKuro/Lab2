@@ -1,4 +1,3 @@
-// Import the Card component from the React-Bootstrap library
 import Card from 'react-bootstrap/Card';
 
 // Define a functional component named Movieitem that receives props
