@@ -3,6 +3,7 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 
+
 // Define and export a functional component called NavigationBar
 export default function NavigationBar() {
   return (
@@ -19,7 +20,7 @@ export default function NavigationBar() {
         <Nav className="me-auto">
           <Nav.Link href="/">Home</Nav.Link>
           <Nav.Link href="/read">Read</Nav.Link>
-          <Nav.Link href="/create">Create</Nav.Link> 
+          <Nav.Link href="/create">Create</Nav.Link>
         </Nav>
 
       </Container>

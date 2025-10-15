@@ -15,7 +15,7 @@ const Movieitem = (props) => {
                     <img 
                         src={props.MyMovie.Poster} 
                         alt={`${props.MyMovie.Title} Poster`} // Accessibility improvement
-                        style={{ width: "100%", borderRadius: "10px", marginTop: "10px" }} 
+                        style={{ width: "10%", borderRadius: "10px", marginTop: "10px" }} 
                     />
                 </Card.Body>
 
