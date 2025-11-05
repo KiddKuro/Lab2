@@ -9,7 +9,7 @@ const [myMovies, setMovie] = useState ([]);
 
 useEffect(
     ()=>{
-    axios.get('https://data-rep-mern-application.github.io/dataserver/movies.json')
+    axios.get('http://localhost:3000/api/movies')
     .then((response)=>{
         console.log(response.data.myArray);
         setMovie(response.data.myArray);

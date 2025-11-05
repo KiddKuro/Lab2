@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import axios from "axios";
 function Create() {
   // State to store the movie title input
   const [title, setTitle] = useState('');
@@ -26,6 +26,17 @@ function Create() {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log({ title, year, posterFile });
+ const movie = {
+    title: title,
+    year: year,
+    poster: posterFile
+  };
+  
+  axios.post('http://localhost:3000/api/movies', movie)
+    .then((res) => console.log(res.data))
+    .catch((err) => console.log(err.data));
+
+
   };
 
   return (
@@ -76,6 +87,7 @@ function Create() {
             />
           </div>
         )}
+
 
         {/* Submit button for the form */}
         <input type="submit" value="Add Movie" />
