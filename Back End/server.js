@@ -1,9 +1,10 @@
-// Import the Express framework to create a web server
+// Import the Express framework for building the web server
 import express from 'express';
-const app = express();
-const port = 3000;
+const app = express(); // Initialize an Express application
+const port = 3000;     // Define the port number for the server
 
-// Import and enable CORS to allow requests from other origins (e.g., frontend apps)
+
+// This allows requests from other origins 
 import cors from 'cors';
 app.use(cors());
 
@@ -12,26 +13,60 @@ import bodyParser from 'body-parser';
 app.use(bodyParser.urlencoded({ extended: true })); // Parse URL-encoded data
 app.use(bodyParser.json()); // Parse JSON data
 
-// POST endpoint for adding or handling new movie data
-app.post('/api/movies', (req, res) => {
-  console.log(req.body); // Log the incoming request body to the console
-  res.send('Post request to the movie endpoint'); // Send a confirmation response
+// ================================
+// Database Connection (MongoDB with Mongoose)
+// ================================
+
+import mongoose from 'mongoose';
+
+// Connect to MongoDB Atlas database using Mongoose
+mongoose.connect('mongodb+srv://aasogu:Pass1Word2@cluster2025aaa.dmlbnqc.mongodb.net/?appName=Cluster2025AAA');
+
+// Define the schema (structure) for movie documents
+const movieSchema = new mongoose.Schema({
+  title: String,
+  year: String,
+  poster: String
 });
 
-// Global middleware to manually set CORS headers for all incoming requests
+// Create a Mongoose model based on the schema
+const movieModel = mongoose.model('Movie', movieSchema);
+
+// POST route to add a new movie to the database
+app.post('/api/movies', async (req, res) => {
+  // Destructure data sent in the request body
+  const { title, year, poster } = req.body;
+
+  try {
+    // Create a new movie document
+    const newMovie = new movieModel({ title, year, poster });
+
+    // Save the new movie to the MongoDB collection
+    await newMovie.save();
+
+    // Log and respond with success message
+    console.log('Movie saved:', newMovie);
+    res.status(201).json({ message: 'Movie created successfully', movie: newMovie });
+  } catch (error) {
+    console.error('Error saving movie:', error);
+    res.status(500).json({ message: 'Failed to save movie', error });
+  }
+});
+
+// Manually set CORS headers for all incoming requests (extra safety)
 app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*"); // Allow all domains
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS"); // Allowed HTTP methods
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept"); // Allowed headers
+  res.header("Access-Control-Allow-Origin", "*"); // Allow requests from any domain
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS"); // Allow specific HTTP methods
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept"); // Allow specific headers
   next(); // Continue to the next middleware or route
 });
 
-// Basic GET route for testing that the server is running
+// Simple GET route for testing server connection
 app.get('/', (req, res) => {
-  res.send('Hello'); // Respond with a simple message
+  res.send('Hello'); // Respond with a simple text message
 });
 
-// GET endpoint that returns a list of movies as JSON data
+// GET route to return a static list of movies as JSON (for testing)
 app.get('/api/movies', (req, res) => {
   const myMovies = [
     {
@@ -57,11 +92,11 @@ app.get('/api/movies', (req, res) => {
     }
   ];
 
-  // Send the movie list as a JSON response under the key "myArray"
+  // Send the movie list as JSON under the key "myArray"
   res.json({ myArray: myMovies });
 });
 
-// Start the Express server and listen for incoming requests on the specified port
+// Listen for incoming requests on the specified port
 app.listen(port, () => {
-  console.log('Server is running on npm in'); // Log to confirm server startup
+  console.log(`✅ Server is running on http://localhost:${port}`);
 });

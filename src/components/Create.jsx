@@ -6,30 +6,32 @@ function Create() {
   // State to store the movie year input
   const [year, setYear] = useState('');
   // State to store the actual poster file object
-  const [posterFile, setPosterFile] = useState(null);
+  const [posterBase64, setPosterBase64] = useState('');
   // State to store a preview URL for the poster image
   const [posterPreview, setPosterPreview] = useState('');
 
-  // Handler function called when the user selects a poster file
-  const handlePosterChange = (e) => {
-    // Get the first selected file
+    const handlePosterChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Save the file in state for later use (e.g., uploading)
-      setPosterFile(file);
-      // Generate a temporary URL for the file to show a preview
-      setPosterPreview(URL.createObjectURL(file));
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        setPosterBase64(reader.result); // this is the Base64 string
+        setPosterPreview(reader.result); // preview uses the same data
+      };
+
+      reader.readAsDataURL(file); // convert to Base64
     }
   };
 
   // Handler function called when the form is submitted
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log({ title, year, posterFile });
+    console.log({ title, year, posterBase64});
  const movie = {
     title: title,
     year: year,
-    poster: posterFile
+    poster: posterBase64,
   };
   
   axios.post('http://localhost:3000/api/movies', movie)
