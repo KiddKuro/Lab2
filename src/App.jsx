@@ -8,6 +8,7 @@ import Footer from './components/Footer.jsx'
 import Content from './components/Content.jsx'
 import Read from './components/read.jsx'
 import Create from './components/create.jsx'
+import Edit from './components/edit.jsx'
 
 // Main App component
 export default function App() {
@@ -22,14 +23,17 @@ export default function App() {
         <Route path="/" element={<h1>Hello everyone Adrian is here!!!</h1>} />
 
         {/* Route for the "Read" page */}
-        <Route path="/read" element={<Read></Read>} />
+        <Route path="/read" element={<Read />} />
 
         {/* Route for the "Create" page */}
         <Route path="/create" element={<Create></Create>} />
+        <Route path='/edit/:id' element={<Edit></Edit>}/>
       </Routes>
 
       {/* Footer displayed at the bottom of the page */}
       <Footer />
     </>
   );
+
 }
+

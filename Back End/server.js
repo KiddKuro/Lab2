@@ -1,102 +1,67 @@
-// Import the Express framework for building the web server
 import express from 'express';
-const app = express(); // Initialize an Express application
-const port = 3000;     // Define the port number for the server
+const app = express();
+const port = 3000;
 
-
-// This allows requests from other origins 
+// Enable cross-origin requests
 import cors from 'cors';
 app.use(cors());
 
-// Import body-parser to handle incoming request bodies (form data and JSON)
+// Parse incoming request bodies
 import bodyParser from 'body-parser';
-app.use(bodyParser.urlencoded({ extended: true })); // Parse URL-encoded data
-app.use(bodyParser.json()); // Parse JSON data
-
-// ================================
-// Database Connection (MongoDB with Mongoose)
-// ================================
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 import mongoose from 'mongoose';
 
-// Connect to MongoDB Atlas database using Mongoose
-mongoose.connect('mongodb+srv://aasogu:Pass1Word2@cluster2025aaa.dmlbnqc.mongodb.net/?appName=Cluster2025AAA');
+// Connect to MongoDB "test" database
+mongoose
+  .connect(
+    'mongodb+srv://aasogu:Pass1Word2@cluster2025aaa.dmlbnqc.mongodb.net/test',
+    { useNewUrlParser: true, useUnifiedTopology: true }
+  )
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((err) => console.log("MongoDB Connection Error:", err));
 
-// Define the schema (structure) for movie documents
+// Movie schema structure
 const movieSchema = new mongoose.Schema({
   title: String,
   year: String,
   poster: String
 });
 
-// Create a Mongoose model based on the schema
-const movieModel = mongoose.model('Movie', movieSchema);
+// Movie model
+const Movie = mongoose.model('Movie', movieSchema);
 
-// POST route to add a new movie to the database
-app.post('/api/movies', async (req, res) => {
-  // Destructure data sent in the request body
-  const { title, year, poster } = req.body;
-
-  try {
-    // Create a new movie document
-    const newMovie = new movieModel({ title, year, poster });
-
-    // Save the new movie to the MongoDB collection
-    await newMovie.save();
-
-    // Log and respond with success message
-    console.log('Movie saved:', newMovie);
-    res.status(201).json({ message: 'Movie created successfully', movie: newMovie });
-  } catch (error) {
-    console.error('Error saving movie:', error);
-    res.status(500).json({ message: 'Failed to save movie', error });
-  }
+// Add a new movie
+app.post('/api/movie', async (req, res) => {
+  const movie = new Movie(req.body);
+  await movie.save();
+  res.status(201).json(movie);
 });
 
-// Manually set CORS headers for all incoming requests (extra safety)
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*"); // Allow requests from any domain
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS"); // Allow specific HTTP methods
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept"); // Allow specific headers
-  next(); // Continue to the next middleware or route
+// Get all movies
+app.get('/api/movies', async (req, res) => {
+  const movies = await Movie.find({});
+  res.json({ myArray: movies });
 });
 
-// Simple GET route for testing server connection
-app.get('/', (req, res) => {
-  res.send('Hello'); // Respond with a simple text message
+// Get one movie by ID
+app.get('/api/movie/:id', async (req, res) => {
+  const movie = await Movie.findById(req.params.id);
+  res.send(movie);
 });
 
-// GET route to return a static list of movies as JSON (for testing)
-app.get('/api/movies', (req, res) => {
-  const myMovies = [
-    {
-      "Title": "Avengers: Infinity War (server)",
-      "Year": "2018",
-      "imdbID": "tt4154756",
-      "Type": "movie",
-      "Poster": "https://m.media-amazon.com/images/M/MV5BMjMxNjY2MDU1OV5BMl5BanBnXkFtZTgwNzY1MTUwNTM@._V1_SX300.jpg"
-    },
-    {
-      "Title": "Captain America: Civil War (server)",
-      "Year": "2016",
-      "imdbID": "tt3498820",
-      "Type": "movie",
-      "Poster": "https://m.media-amazon.com/images/M/MV5BMjQ0MTgyNjAxMV5BMl5BanBnXkFtZTgwNjUzMDkyODE@._V1_SX300.jpg"
-    },
-    {
-      "Title": "World War Z (server)",
-      "Year": "2013",
-      "imdbID": "tt0816711",
-      "Type": "movie",
-      "Poster": "https://m.media-amazon.com/images/M/MV5BNDQ4YzFmNzktMmM5ZC00MDZjLTk1OTktNDE2ODE4YjM2MjJjXkEyXkFqcGdeQXVyNTA4NzY1MzY@._V1_SX300.jpg"
-    }
-  ];
-
-  // Send the movie list as JSON under the key "myArray"
-  res.json({ myArray: myMovies });
+// Update a movie by ID
+app.put('/api/movie/:id', async (req, res) => {
+  const movie = await Movie.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    { new: true }
+  );
+  res.send(movie);
 });
 
-// Listen for incoming requests on the specified port
+// Start the server
 app.listen(port, () => {
-  console.log(`✅ Server is running on http://localhost:${port}`);
+  console.log(`Server running at http://localhost:${port}`);
 });

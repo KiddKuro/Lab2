@@ -1,98 +1,104 @@
-import { useState } from "react";
-import axios from "axios";
+// Create.jsx
+import { useState } from 'react';
+import axios from 'axios';
+
 function Create() {
-  // State to store the movie title input
   const [title, setTitle] = useState('');
-  // State to store the movie year input
   const [year, setYear] = useState('');
-  // State to store the actual poster file object
   const [posterBase64, setPosterBase64] = useState('');
-  // State to store a preview URL for the poster image
   const [posterPreview, setPosterPreview] = useState('');
 
-    const handlePosterChange = (e) => {
+  const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
+    if (!file) return;
 
-      reader.onloadend = () => {
-        setPosterBase64(reader.result); // this is the Base64 string
-        setPosterPreview(reader.result); // preview uses the same data
-      };
+    const reader = new FileReader();
 
-      reader.readAsDataURL(file); // convert to Base64
-    }
+    reader.onloadend = () => {
+      setPosterBase64(reader.result); // Base64 string for DB
+      setPosterPreview(reader.result); // Preview in UI
+    };
+
+    reader.readAsDataURL(file); // file -> Base64
   };
 
-  // Handler function called when the form is submitted
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log({ title, year, posterBase64});
- const movie = {
-    title: title,
-    year: year,
-    poster: posterBase64,
-  };
-  
-  axios.post('http://localhost:3000/api/movies', movie)
-    .then((res) => console.log(res.data))
-    .catch((err) => console.log(err.data));
 
+    const movie = {
+      title,
+      year,
+      poster: posterBase64, // store Base64
+    };
 
+    axios
+      .post('http://localhost:3000/api/movie', movie)
+      .then((res) => {
+        alert('Movie Added Successfully!');
+        setTitle('');
+        setYear('');
+        setPosterBase64('');
+        setPosterPreview('');
+      })
+      .catch((err) => console.log('POST /api/movie error:', err));
   };
 
   return (
     <div>
-      <h2>This is my Create Component.</h2>
+      <h2>Add a Movie</h2>
+
       <form onSubmit={handleSubmit}>
-        {/* Input field for movie title */}
         <div className="form-group">
-          <label>Add Movie Title: </label>
+          <label>Movie Title:</label>
           <input
             type="text"
             className="form-control"
             value={title}
-            onChange={(e) => setTitle(e.target.value)} // Update title state on input change
+            onChange={(e) => setTitle(e.target.value)}
+            required
           />
         </div>
 
-        {/* Input field for movie year */}
         <div className="form-group">
-          <label>Add Movie Year: </label>
+          <label>Release Year:</label>
           <input
             type="number"
             className="form-control"
             value={year}
-            onChange={(e) => setYear(e.target.value)} // Update year state on input change
+            onChange={(e) => setYear(e.target.value)}
+            required
           />
         </div>
 
-        {/* File input for movie poster */}
         <div className="form-group">
-          <label>Add Movie Poster: </label>
+          <label>Movie Poster (Upload File):</label>
           <input
             type="file"
             className="form-control"
-            accept="image/*" // Accept only image files
-            onChange={handlePosterChange} // Handle file selection
+            accept="image/*"
+            onChange={handleFileChange}
+            required
           />
         </div>
 
-        {/* Conditionally render poster preview if a file is selected */}
         {posterPreview && (
           <div style={{ marginTop: '10px' }}>
-            <p>Poster Preview:</p>
+            <p>Preview:</p>
             <img
-              src={posterPreview} // Show image preview
+              src={posterPreview}
               alt="Poster Preview"
-              style={{ maxWidth: '200px', maxHeight: '300px' }} // Limit preview size
+              style={{ maxWidth: '200px', borderRadius: '10px' }}
             />
           </div>
         )}
 
-
-        {/* Submit button for the form */}
-        <input type="submit" value="Add Movie" />
+        <button
+          type="submit"
+          className="btn btn-success"
+          style={{ marginTop: '10px' }}
+        >
+          Add Movie
+        </button>
       </form>
     </div>
   );

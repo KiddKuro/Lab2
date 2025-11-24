@@ -1,29 +1,34 @@
-// Import the Card component from the React-Bootstrap library
+// movieitem.jsx
 import Card from 'react-bootstrap/Card';
+import { Link } from 'react-router-dom';
 
-// Define a functional component named Movieitem that receives props
 const Movieitem = (props) => {
-    return (
-        <div>
-            {/* Bootstrap Card to display individual movie info */}
-            <Card className="text-center"> 
-                <Card.Body>
-                    {/* Display the movie title */}
-                    <Card.Title>{props.MyMovie.Title}</Card.Title>
+  const movie = props.MyMovie;
 
-                    {/* Display the movie poster image */}
-                    <img 
-                        src={props.MyMovie.Poster} 
-                        alt={`${props.MyMovie.Title} Poster`} // Accessibility improvement
-                        style={{ width: "10%", borderRadius: "10px", marginTop: "10px" }} 
-                    />
-                </Card.Body>
+  return (
+    <div style={{ marginBottom: '20px' }}>
+      <Card className="text-center">
+        <Card.Body>
+          <Card.Title>{movie.title}</Card.Title>
 
-                {/* Display the movie release year in the card footer */}
-                <Card.Footer className="text-muted">{props.MyMovie.Year}</Card.Footer>
-            </Card>
-        </div>
-    );
-}
+          <img
+            src={movie.poster}
+            alt="Poster"
+            style={{ width: '200px', borderRadius: '10px' }}
+          />
+
+          <br />
+          <br />
+
+          <Link to={`/edit/${movie._id}`} className="btn btn-primary">
+            Edit
+          </Link>
+        </Card.Body>
+
+        <Card.Footer className="text-muted">{movie.year}</Card.Footer>
+      </Card>
+    </div>
+  );
+};
 
 export default Movieitem;
