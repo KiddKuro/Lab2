@@ -39,6 +39,18 @@ app.post('/api/movie', async (req, res) => {
   res.status(201).json(movie);
 });
 
+//Delete created or added movie from database
+app.delete('/api/movie/:id',async(req, res) => {
+  console.log('Deleting movie with id:', req.params.id);
+  const movie = await Movie.findByIdAndDelete(req.params.id);
+  console.log('Movie deleted: ');
+  res.json({message: 'Movie deleted succesfully', movie: movie});
+})
+
+
+
+
+
 // Get all movies
 app.get('/api/movies', async (req, res) => {
   const movies = await Movie.find({});

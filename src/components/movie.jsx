@@ -4,8 +4,8 @@ import Movieitem from './movieitem.jsx';
 const Movies = (props) => {
   return (
     <div>
-      {props.MyMovies.map((movie) => (
-        <Movieitem MyMovie={movie} key={movie._id} />
+      {props.myMovies.map((movie) => (
+        <Movieitem myMovie={movie} key={movie._id} Reload ={props.Reload} />
       ))}
     </div>
   );
