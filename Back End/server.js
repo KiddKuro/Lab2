@@ -1,19 +1,25 @@
 import express from 'express';
+import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import bodyParser from 'body-parser';
+import mongoose from 'mongoose';
+
 const app = express();
 const port = 3000;
 
-// Enable cross-origin requests
-import cors from 'cors';
-app.use(cors());
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// Parse incoming request bodies
-import bodyParser from 'body-parser';
+// Allowe cross origin requests
+app.use(cors());
+//Paste URL-encoded  form data
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+//JSON request bodies
+app.use(express.static(path.join(__dirname, "../dist")));
 
-import mongoose from 'mongoose';
 
-// Connect to MongoDB "test" database
 mongoose
   .connect(
     'mongodb+srv://aasogu:Pass1Word2@cluster2025aaa.dmlbnqc.mongodb.net/test',
@@ -22,34 +28,30 @@ mongoose
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.log("MongoDB Connection Error:", err));
 
-// Movie schema structure
+
 const movieSchema = new mongoose.Schema({
   title: String,
   year: String,
   poster: String
 });
 
-// Movie model
 const Movie = mongoose.model('Movie', movieSchema);
 
-// Add a new movie
+
+
+// Add movie
 app.post('/api/movie', async (req, res) => {
   const movie = new Movie(req.body);
   await movie.save();
   res.status(201).json(movie);
 });
 
-//Delete created or added movie from database
-app.delete('/api/movie/:id',async(req, res) => {
+// Delete movie
+app.delete('/api/movie/:id', async (req, res) => {
   console.log('Deleting movie with id:', req.params.id);
   const movie = await Movie.findByIdAndDelete(req.params.id);
-  console.log('Movie deleted: ');
-  res.json({message: 'Movie deleted succesfully', movie: movie});
-})
-
-
-
-
+  res.json({ message: 'Movie deleted successfully', movie: movie });
+});
 
 // Get all movies
 app.get('/api/movies', async (req, res) => {
@@ -57,13 +59,13 @@ app.get('/api/movies', async (req, res) => {
   res.json({ myArray: movies });
 });
 
-// Get one movie by ID
+// Get a movie
 app.get('/api/movie/:id', async (req, res) => {
   const movie = await Movie.findById(req.params.id);
   res.send(movie);
 });
 
-// Update a movie by ID
+// Update movie
 app.put('/api/movie/:id', async (req, res) => {
   const movie = await Movie.findByIdAndUpdate(
     req.params.id,
@@ -73,7 +75,13 @@ app.put('/api/movie/:id', async (req, res) => {
   res.send(movie);
 });
 
-// Start the server
+//Send frontend for all non-API routes 
+app.get('/{*any}', (req, res) => {
+  res.sendFile(path.join(__dirname, '../dist/index.html'));
+});
+
+
+
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
